@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"runtime"
 )
 
 var (
@@ -15,6 +16,8 @@ var (
 )
 
 func main() {
+
+	fmt.Println("Part One")
 	stepOne()
 	stepTwo()
 	stepThree(64)
@@ -85,6 +88,36 @@ func main() {
 	logMsg("Step 12: consts")
 	const const1 = 25
 	fmt.Printf("Const: %v\n", const1)
+
+	fmt.Println("\nPart Two")
+
+	for i := 0; i < 5; i++ {
+		fmt.Printf("%v\n", i)
+	}
+
+	logMsg("If statement")
+	fmt.Println(pow(3, 2, 10))
+
+	fmt.Print("\nGo runs on ")
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		fmt.Println("OS X.")
+	case "linux":
+		fmt.Println("Linux.")
+	default:
+		// freebsd, openbsd,
+		// plan9, windows...
+		fmt.Printf("%s.\n", os)
+	}
+
+	// logMsg("Stacking defers")
+	// fmt.Println("counting")
+	// for i := 0; i < 10; i++ {
+	// 	defer fmt.Println(i)
+	// }
+	// fmt.Println("done")
+
+	fmt.Println("\nPart Three")
 }
 
 func logMsg(msg string) {
@@ -124,4 +157,11 @@ func stepSix(z int) (x, y int) {
 	x = z*2 + z/2
 	y = x/2 + 1
 	return
+}
+
+func pow(x, n, lim float64) float64 {
+	if v := math.Pow(x, n); v < lim {
+		return v
+	}
+	return lim
 }
