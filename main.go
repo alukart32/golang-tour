@@ -118,6 +118,69 @@ func main() {
 	// fmt.Println("done")
 
 	fmt.Println("\nPart Three")
+	logMsg("Pointers")
+	var p *int = &i // p := &i
+	fmt.Printf("Pointer p value: %v", *p)
+
+	valOne, valTwo := 42, 2701
+
+	valPoint := &valOne    // point to i
+	fmt.Println(*valPoint) // read i through the pointer
+	*valPoint = 21         // set i through the pointer
+	fmt.Println(valOne)    // see the new value of i
+
+	valPoint = &valTwo         // point to j
+	*valPoint = *valPoint / 37 // divide j through the pointer
+	fmt.Println(valTwo)        // see the new value of j
+
+	logMsg("Struct")
+	type Vertex struct {
+		x int
+		y int
+	}
+
+	fmt.Println(Vertex{10, 26})
+
+	v := Vertex{44, 57}
+	v.x = 90
+	fmt.Println(v)
+
+	vPoint := &v
+	vPoint.y = 256 // (*vPoint).y = 256
+	fmt.Println(*vPoint)
+
+	v2 := Vertex{x: 1} // struct literals
+	fmt.Println(v2)
+
+	logMsg("Arrays")
+	array := [6]int{1, 2, 3, 4, 5, 6} // var array[6]int
+	fmt.Println(array)
+
+	logMsg("Slices")
+	slices := array[2:5]
+	fmt.Println(slices)
+
+	slices[0] = 100
+	fmt.Println(array)
+
+	slice1 := []int{2, 3, 5, 7, 11, 13}
+	fmt.Println(slice1)
+
+	slice2 := []bool{true, false, true, true, false, true}
+	fmt.Println(slice2)
+
+	slice3 := []struct {
+		i int
+		b bool
+	}{
+		{2, true},
+		{3, false},
+		{5, true},
+		{7, true},
+		{11, false},
+		{13, true},
+	}
+	fmt.Println(slice3)
 }
 
 func logMsg(msg string) {
