@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"runtime"
+	"strings"
 )
 
 var (
@@ -181,11 +182,80 @@ func main() {
 		{13, true},
 	}
 	fmt.Println(slice3)
+
+	logMsg("Slice with make")
+	slice_a := make([]int, 5)
+	printSlice("slice_a", slice_a)
+
+	slice_b := make([]int, 0, 5)
+	printSlice("slice_b", slice_b)
+
+	slice_c := slice_b[:2]
+	printSlice("slice_c", slice_c)
+
+	slice_d := slice_c[2:5]
+	printSlice("slice_d", slice_d)
+
+	logMsg("Slices of slices")
+	board := [][]string{
+		{"_", "_", "_"},
+		{"_", "_", "_"},
+		{"_", "_", "_"},
+	}
+
+	// The players take turns.
+	board[0][0] = "X"
+	board[2][2] = "O"
+	board[1][2] = "X"
+	board[1][0] = "O"
+	board[0][2] = "X"
+
+	for i := 0; i < len(board); i++ {
+		fmt.Printf("%s\n", strings.Join(board[i], " "))
+	}
+
+	logMsg("Appending to a slice")
+	var s []int
+	printSlice("void_slice", s)
+
+	// append works on nil slices.
+	s = append(s, 0)
+	printSlice("append_slice_0", s)
+
+	// The slice grows as needed.
+	s = append(s, 1)
+	printSlice("append_slice_1", s)
+
+	// We can add more than one element at a time.
+	s = append(s, 2, 3, 4)
+	printSlice("append_slice_arr", s)
+
+	Pic(3, 2)
 }
 
 func logMsg(msg string) {
 	fmt.Println()
 	log.Printf("%v\n", msg)
+}
+
+func printSlice(s string, x []int) {
+	fmt.Printf("%s len=%d cap=%d %v\n",
+		s, len(x), cap(x), x)
+}
+
+func Pic(dx, dy int) [][]uint8 {
+	matrix := [][]uint8{}
+
+	for i := 0; i < dy; i++ {
+		matrix = append(matrix, make([]uint8, dx))
+	}
+
+	for i := 0; i < dy; i++ {
+		for j := 0; j < dx; j++ {
+			matrix[i][j] = uint8(i * j)
+		}
+	}
+	return matrix
 }
 
 func stepOne() {
