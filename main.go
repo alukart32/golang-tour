@@ -231,6 +231,35 @@ func main() {
 	printSlice("append_slice_arr", s)
 
 	Pic(3, 2)
+
+	logMsg("Map")
+	// The zero value of a map is nil. A nil map has no keys, nor can keys be added
+	map_vert := make(map[string]Vertex) // var map_vert := map[string]Verttex
+	map_vert["key_1"] = Vertex{1, 2}
+	fmt.Printf("\nMap value: %v\n", map_vert["key_1"])
+
+	map_big := map[string]Vertex{
+		"key_1": Vertex{1, 2},
+		"key_2": Vertex{3, 4},
+	}
+
+	fmt.Printf("\nBig Map key: %v, value: %v\n", "key_2", map_big["key_2"])
+
+	logMsg("Mutating Maps")
+	map_big["key_3"] = Vertex{4, 5}
+	map_big["key_zero"] = Vertex{0, 0}
+
+	fmt.Println("Big Map: ", map_big)
+
+	delete(map_big, "key_zero")
+
+	fmt.Println("Big Map after delete by key 'key_zero': ", map_big)
+
+	elem, ok := map_big["key_2"]
+	fmt.Printf("Check Big Map by key: %s, elem: %v, ok: %v\n", "key_2", elem, ok)
+
+	elem2, ok2 := map_big["key_no"]
+	fmt.Printf("Check Big Map by key: %s, elem: %v, ok: %v\n", "key_no", elem2, ok2)
 }
 
 func logMsg(msg string) {
