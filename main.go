@@ -16,6 +16,13 @@ var (
 	MaxInt   uint64 = 1<<64 - 1
 )
 
+type MyInt int
+
+type Vertex struct {
+	x int
+	y int
+}
+
 func main() {
 
 	fmt.Println("Part One")
@@ -135,10 +142,6 @@ func main() {
 	fmt.Println(valTwo)        // see the new value of j
 
 	logMsg("Struct")
-	type Vertex struct {
-		x int
-		y int
-	}
 
 	fmt.Println(Vertex{10, 26})
 
@@ -260,6 +263,44 @@ func main() {
 
 	elem2, ok2 := map_big["key_no"]
 	fmt.Printf("Check Big Map by key: %s, elem: %v, ok: %v\n", "key_no", elem2, ok2)
+
+	logMsg("Words map")
+	fmt.Println(WordCount("aa dfc ddd aa erwer aa cvs ddd cvs"))
+
+	logMsg("Function as values")
+	hypot := func(x, y float64) float64 {
+		return math.Sqrt(x*x + y*y)
+	}
+	fmt.Println("Stright fun call: ", hypot(5, 12))
+	fmt.Println("From fn fun call: ", compute(hypot, 5, 12))
+
+	logMsg("Function closures")
+	pos, neg := adder(), adder()
+	for i := 0; i < 10; i++ {
+		fmt.Println(
+			pos(i),
+			neg(-2*i),
+		)
+	}
+
+	logMsg("Fibonacci closure")
+	fib := fibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Println(fib())
+	}
+
+	logMsg("Methods")
+	funcForMethod := func(x, y int) int {
+		return x * y
+	}
+	fmt.Println("Method for Vertex", Vertex{3, 4}.methodForVertexType(funcForMethod))
+
+	logMsg("Method for non struct")
+	funcForMyInt := func(x MyInt) int {
+		return int(x) + 25
+	}
+	fmt.Println("Method for Vertex", MyInt(25).methodForMyInt(funcForMyInt))
+
 }
 
 func logMsg(msg string) {
@@ -270,6 +311,35 @@ func logMsg(msg string) {
 func printSlice(s string, x []int) {
 	fmt.Printf("%s len=%d cap=%d %v\n",
 		s, len(x), cap(x), x)
+}
+
+func (i MyInt) methodForMyInt(fn func(x MyInt) int) int {
+	return fn(i)
+}
+
+func (v Vertex) methodForVertexType(fn func(x, y int) int) int {
+	return fn(v.x, v.y)
+}
+
+func compute(fn func(float64, float64) float64, x, y float64) float64 {
+	return fn(x, y)
+}
+
+func fibonacci() func() int {
+	first, second := 0, 1
+	return func() int {
+		ret := first
+		first, second = second, first+second
+		return ret
+	}
+}
+
+func adder() func(int) int {
+	sum := 0
+	return func(x int) int {
+		sum += x
+		return sum
+	}
 }
 
 func Pic(dx, dy int) [][]uint8 {
@@ -285,6 +355,23 @@ func Pic(dx, dy int) [][]uint8 {
 		}
 	}
 	return matrix
+}
+
+func WordCount(s string) map[string]int {
+	words_map := map[string]int{}
+	words := strings.Fields(s)
+
+	for _, target := range words {
+		count := 0
+		for _, value := range words {
+			if target == value {
+				count++
+			}
+		}
+		words_map[target] = count
+	}
+
+	return words_map
 }
 
 func stepOne() {
