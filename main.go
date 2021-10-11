@@ -301,6 +301,10 @@ func main() {
 	}
 	fmt.Println("Method for Vertex", MyInt(25).methodForMyInt(funcForMyInt))
 
+	logMsg("Pointer receivers")
+	v1 := Vertex{3, 4}
+	v1.Scale(10)
+	fmt.Println(v1.Abs())
 }
 
 func logMsg(msg string) {
@@ -319,6 +323,15 @@ func (i MyInt) methodForMyInt(fn func(x MyInt) int) int {
 
 func (v Vertex) methodForVertexType(fn func(x, y int) int) int {
 	return fn(v.x, v.y)
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(float64(v.x*v.x + v.y*v.y))
+}
+
+func (v *Vertex) Scale(f int) {
+	v.x = v.x * f
+	v.y = v.y * f
 }
 
 func compute(fn func(float64, float64) float64, x, y float64) float64 {
