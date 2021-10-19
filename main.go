@@ -17,11 +17,40 @@ var (
 )
 
 type MyInt int
+type MyFloat float64
 
 type Vertex struct {
 	x int
 	y int
 }
+
+type Abser interface {
+	Abs() float64
+}
+
+type I interface {
+	M()
+}
+
+type T struct {
+	S string
+}
+
+func (t *T) M() {
+	if t == nil {
+		fmt.Println("<nil>")
+		return
+	}
+	fmt.Println(t.S)
+}
+
+type F float64
+
+func (f F) M() {
+	fmt.Println(f)
+}
+
+type IPAddr [4]byte
 
 func main() {
 
@@ -305,7 +334,116 @@ func main() {
 	v1 := Vertex{3, 4}
 	v1.Scale(10)
 	fmt.Println(v1.Abs())
+
+	logMsg("Interfaces")
+	var abser Abser
+	f_abser := MyFloat(-math.Sqrt2)
+	v_abser := Vertex{3, 4}
+
+	abser = f_abser // a MyFloat implements Abser
+	abser = v_abser // a Vertex implements Abser
+
+	fmt.Println(abser.Abs())
+
+	logMsg("Interface values")
+	/*
+		Under the hood, interface values can be thought of as a tuple of a value and a concrete type:
+
+		(value, type)
+		An interface value holds a value of a specific underlying concrete type.
+
+		Calling a method on an interface value executes the method of the same name on its underlying type.
+	*/
+	var ii I
+
+	ii = &T{"Hello"}
+	describe(ii)
+	ii.M()
+
+	ii = F(math.Pi)
+	describe(ii)
+	ii.M()
+
+	var t *T
+	ii = t
+	describe(ii)
+	ii.M()
+
+	logMsg("The empty interface")
+	/*
+		An empty interface may hold values of any type. (Every type implements at least zero methods.)
+
+		Empty interfaces are used by code that handles values of unknown type.
+		For example, fmt.Print takes any number of arguments of type interface{}.
+
+	*/
+	var emptyInterface interface{}
+	describeCommon(emptyInterface)
+
+	emptyInterface = 42
+	describeCommon(emptyInterface)
+
+	emptyInterface = "hello"
+	describeCommon(emptyInterface)
+
+	logMsg("Type assertions")
+	/*
+		A type assertion provides access to an interface value's underlying concrete value.
+
+		t := i.(T)
+		This statement asserts that the interface value i holds the concrete type T and assigns the underlying T value to the variable t.
+
+		If i does not hold a T, the statement will trigger a panic.
+
+		To test whether an interface value holds a specific type, a type assertion can return two values: the underlying value and a boolean value that reports whether the assertion succeeded.
+
+		t, ok := i.(T)
+		If i holds a T, then t will be the underlying value and ok will be true.
+
+		If not, ok will be false and t will be the zero value of type T, and no panic occurs.
+
+		Note the similarity between this syntax and that of reading from a map.
+	*/
+	var interfaceAssertionType interface{} = "hello"
+
+	sAssertionType, ok := interfaceAssertionType.(string)
+	fmt.Println(sAssertionType, ok)
+
+	fAssertionType, ok := interfaceAssertionType.(float64)
+	fmt.Println(fAssertionType, ok)
+
+	// fAssertionType = interfaceAssertionType.(float64) // panic
+	// fmt.Println(fAssertionType)
+
+	logMsg("Type switches")
+	/*
+		A type switch is a construct that permits several type assertions in series.
+
+		A type switch is like a regular switch statement, but the cases in a type switch specify types (not values), and those values are compared against the type of the value held by the given interface value.
+
+		switch v := i.(type) {
+		case T:
+		    // here v has type T
+		case S:
+		    // here v has type S
+		default:
+		    // no match; here v has the same type as i
+		}
+		The declaration in a type switch has the same syntax as a type assertion i.(T), but the specific type T is replaced with the keyword type.
+	*/
+	switchTypes(30)
+	switchTypes(13.22)
+
+	hosts := map[string]IPAddr{
+		"loopback":  {127, 0, 0, 1},
+		"googleDNS": {8, 8, 8, 8},
+	}
+	for name, ip := range hosts {
+		fmt.Printf("%v: %v\n", name, ip)
+	}
 }
+
+// UTIL FUNCTION
 
 func logMsg(msg string) {
 	fmt.Println()
@@ -315,6 +453,40 @@ func logMsg(msg string) {
 func printSlice(s string, x []int) {
 	fmt.Printf("%s len=%d cap=%d %v\n",
 		s, len(x), cap(x), x)
+}
+
+func describe(i I) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+
+func describeCommon(i interface{}) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+
+// FUNCTIONS
+
+func (ip IPAddr) String() string {
+	return fmt.Sprintf("%v.%v.%v.%v", ip[0], ip[1], ip[2], ip[3])
+}
+
+func switchTypes(i interface{}) {
+	switch v := i.(type) {
+	case int:
+		describeCommon(v)
+	case float64:
+		describeCommon(v)
+	case rune:
+		describeCommon(v)
+	default:
+		panic("Unknown type!!!")
+	}
+}
+
+func (f MyFloat) Abs() float64 {
+	if f < 0 {
+		return float64(-f)
+	}
+	return float64(f)
 }
 
 func (i MyInt) methodForMyInt(fn func(x MyInt) int) int {
